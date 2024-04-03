@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import PlayerInput from "@/components/game/PlayerInput";
-import PlayerProgressComponent from "@/components/game/PlayerProgress";
 import GameText from "@/components/game/GameText";
 
 const testPhrase =
@@ -15,8 +14,10 @@ export default function Game() {
   };
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <GameText gamePhrase={testPhrase} cursor={playerProgress.length} />
+      <div className="text-3xl font-bold text-gray-800 border border-gray-300 p-4 rounded-lg max-w-lg mx-auto">
+        <GameText gamePhrase={testPhrase} cursor={playerProgress.length} />
       <PlayerInput value={playerProgress} onChange={handleChange} />
+      </div>
     </div>
   );
 }
