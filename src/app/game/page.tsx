@@ -27,13 +27,14 @@ export default function Game() {
       setStartIdx(startIdx + input.length);
       setTypedText("");
       setMatchingLen(0);
-    } else {
+
+    } else if (matchingLen + 15 > input.length) {
       setMatchingLen(newMatchingLen);
       setTypedText(input);
     }
 
     if (testPhrase.slice(startIdx + input.length).trim().length === 0) {
-      // End of phrase reached, reset game or show completion message
+      // implement game end
     }
   };
 
