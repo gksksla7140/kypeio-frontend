@@ -1,38 +1,66 @@
 import React from "react";
-import { calculateLongestPrefix } from "@/lib/utils";
 
-type GameTextProps = {
+type TextBoardProps = {
   phrase: string;
   typedText: string;
   startIdx: number;
+  enemiesProgress: Record<string, number>;
 };
 
-const GameText: React.FC<GameTextProps> = ({
+const TextBoard: React.FC<TextBoardProps> = ({
   phrase,
   typedText,
   startIdx,
+  enemiesProgress,
 }) => {
-  const completedPhrase = phrase.slice(0, startIdx);
-  const matchingLen = calculateLongestPrefix(typedText, phrase.slice(startIdx));
+  const renderCharacterSpan = (char: string, index: number) => {
+    const isCompleted = index < startIdx;
+    const isMatching = startIdx <= index && index < startIdx + typedText.length;
+    const isMisMatching = isMatching && char !== typedText[index - startIdx];
+    const isEnemyProgress = Object.values(enemiesProgress).includes(index);
 
-  const matchingPhrase = phrase.slice(startIdx, startIdx + matchingLen);
+    const classNames = [
+      "inline-block",
+      isCompleted ? "text-green-300" : "",
+      isMatching ? "text-green-500" : "",
+      isMisMatching ? "text-red-500" : "",
+      isEnemyProgress ? "bg-purple-300" : "",
+    ].join(" ");
 
-  const misMatchingPhrase = phrase.slice(
-    startIdx + matchingLen,
-    startIdx + typedText.length
-  );
+    return (
+      <span key={index} className={classNames}>
+        {char === " " ? "\u00A0" : char}
+      </span>
+    );
+  };
 
-  const remainingPhrase = phrase.slice(startIdx + typedText.length);
+  const renderCharacterSpans = () => {
+    return phrase
+      .split("")
+      .map((char, index) => renderCharacterSpan(char, index));
+  };
+
+  const insertCursor = (spanArr: JSX.Element[]) => {
+    const cursorSpan = (
+      <span key="cursor" className="inline-block text-black">
+        |
+      </span>
+    );
+    return [
+      ...spanArr.slice(0, startIdx + typedText.length),
+      cursorSpan,
+      ...spanArr.slice(startIdx + typedText.length),
+    ];
+  };
+
+  const spans = renderCharacterSpans();
+  const spansWithCursor = insertCursor(spans);
 
   return (
     <div className="text-3xl font-bold text-gray-800 p-4 max-w-lg mx-auto">
-      <span className="text-green-300">{completedPhrase}</span>
-      <span className="text-green-500">{matchingPhrase}</span>
-      <span className="text-red-500 bg-red-300">{misMatchingPhrase}</span>
-      <span className="text-gray-800">{"|"}</span>
-      <span className="text-gray-400">{remainingPhrase}</span>
+      {spansWithCursor}
     </div>
   );
 };
 
-export default GameText;
+export default TextBoard;
