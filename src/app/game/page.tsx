@@ -42,6 +42,11 @@ export default function Game() {
       return;
     }
 
+    // GAME STARTED
+    if (!gameStarted) {
+      setGameStarted(true);
+    }
+
     // WORD FINISHED -> MOVED TO NEXT WORD
     if (input.endsWith(" ") && testPhrase.slice(startIdx).startsWith(input)) {
         setStartIdx(startIdx + input.length);
@@ -74,18 +79,18 @@ export default function Game() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="text-3xl font-bold text-gray-800 border border-gray-300 p-4 rounded-lg max-w-lg mx-auto">
+      <div className="text-3xl flex flex-col gap-10 font-bold text-gray-800 border border-gray-300 p-4 rounded-lg max-w-lg mx-auto">
         <GameText
           phrase={testPhrase}
           typedText={typedText}
           startIdx={startIdx}
         />
-        <h1>{elapsedTime}</h1>
-      </div>
       {!gameEnded && <PlayerInput value={typedText} onChange={handleChange} />}
+        <h1 className="text-black text-center">{elapsedTime}</h1>
+      </div>
       {gameEnded && (
         <div className="text-black">
-          <p>Game ended! Time elapsed: {elapsedTime} seconds</p>
+          <p className="text-center">Game ended! Time elapsed: {elapsedTime} seconds</p>
           <button onClick={handleReset}>Restart</button>
         </div>
       )}
