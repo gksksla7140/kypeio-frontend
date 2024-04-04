@@ -7,17 +7,47 @@ const testPhrase =
   "Hello this is a test phrase to type out in the game component. But it's not a game yet, just a test.";
 
 export default function Game() {
-  const [playerProgress, setPlayerProgress] = useState("");
+  const [typedText, setTypedText] = useState("");
+  const [matchingLen, setMatchingLen] = useState(0);
+  const [startIdx, setStartIdx] = useState(0);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPlayerProgress(event.target.value);
+    const input = event.target.value;
+
+    let newMatchingLen = 0;
+    while (
+      newMatchingLen < input.length &&
+      newMatchingLen < testPhrase.length &&
+      input[newMatchingLen] === testPhrase[startIdx + newMatchingLen]
+    ) {
+      newMatchingLen++;
+    }
+
+    if (input.endsWith(" ") && testPhrase.slice(startIdx).startsWith(input)) {
+      setStartIdx(startIdx + input.length);
+      setTypedText("");
+      setMatchingLen(0);
+    } else {
+      setMatchingLen(newMatchingLen);
+      setTypedText(input);
+    }
+
+    if (testPhrase.slice(startIdx + input.length).trim().length === 0) {
+      // End of phrase reached, reset game or show completion message
+    }
   };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-3xl font-bold text-gray-800 border border-gray-300 p-4 rounded-lg max-w-lg mx-auto">
-        <GameText gamePhrase={testPhrase} cursor={playerProgress.length} />
-      <PlayerInput value={playerProgress} onChange={handleChange} />
+        <GameText
+          phrase={testPhrase}
+          typedText={typedText}
+          matchingLen={matchingLen}
+          startIdx={startIdx}
+        />
       </div>
+      <PlayerInput value={typedText} onChange={handleChange} />
     </div>
   );
 }

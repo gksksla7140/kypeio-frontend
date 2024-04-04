@@ -12,7 +12,7 @@ const PlayerInput = ({ value, onChange }: PlayerInputProps) => {
       value={value}
       onChange={onChange}
       placeholder="Type here..."
-      className="border rounded p-2 w-full"
+      className="border rounded p-2 w-full text-black text-lg"
     />
   );
 };
