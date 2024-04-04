@@ -1,19 +1,19 @@
 import React from "react";
+import { calculateLongestPrefix } from "@/lib/utils";
 
 type GameTextProps = {
   phrase: string;
   typedText: string;
-  matchingLen: number;
   startIdx: number;
 };
 
 const GameText: React.FC<GameTextProps> = ({
   phrase,
   typedText,
-  matchingLen,
   startIdx,
 }) => {
   const completedPhrase = phrase.slice(0, startIdx);
+  const matchingLen = calculateLongestPrefix(typedText, phrase.slice(startIdx));
 
   const matchingPhrase = phrase.slice(startIdx, startIdx + matchingLen);
 

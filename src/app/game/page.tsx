@@ -2,13 +2,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import PlayerInput from "@/components/game/PlayerInput";
 import GameText from "@/components/game/GameText";
+import { calculateLongestPrefix } from "@/lib/utils";
 
 const testPhrase = "Hello testing this world hello my ages in 25";
 const misMatchLimit = 15;
 
 export default function Game() {
   const [typedText, setTypedText] = useState("");
-  const [matchingLen, setMatchingLen] = useState(0);
   const [startIdx, setStartIdx] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameEnded, setGameEnded] = useState(false);
@@ -30,62 +30,42 @@ export default function Game() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
+    const matchingPrefix = calculateLongestPrefix(input, testPhrase.slice(startIdx));
 
+    // OUT OF BOUNDS
     if (startIdx + input.length > testPhrase.length) {
       return;
     }
 
-    if (matchingLen + input.length > misMatchLimit) {
+    // MISMATCH LIMIT REACHED
+    if (input.length - matchingPrefix > misMatchLimit) {
       return;
     }
 
-    if (!gameStarted) {
-      console.log("Game started!");
-      setGameStarted(true);
-    }
-
-    const remainingPhrase = testPhrase.slice(startIdx + input.length);
-
+    // WORD FINISHED -> MOVED TO NEXT WORD
     if (input.endsWith(" ") && testPhrase.slice(startIdx).startsWith(input)) {
-      handleWordCompleted(input.length, remainingPhrase);
-      return;
+        setStartIdx(startIdx + input.length);
+        setTypedText("");
+        return;
     }
+    
+    // GAME ENDED
     if (
       input.length + startIdx === testPhrase.length &&
       input === testPhrase.slice(startIdx)
     ) {
+      console.log("Game Ended!")
       setGameEnded(true);
     }
-    handleWordInProgress(input, input.length);
-  };
-
-  const handleWordCompleted = (inputLen: number, remainingPhrase: string) => {
-    setStartIdx(startIdx + inputLen);
-    setTypedText("");
-    setMatchingLen(0);
-    if (remainingPhrase.trim().length === 0) {
-      console.log("Game ended!");
-      setGameEnded(true);
-    }
-  };
-
-  const handleWordInProgress = (input: string, inputLen: number) => {
-    let newMatchingLen = 0;
-    while (
-      newMatchingLen < inputLen &&
-      newMatchingLen < testPhrase.length &&
-      input[newMatchingLen] === testPhrase[startIdx + newMatchingLen]
-    ) {
-      newMatchingLen++;
-    }
-
-    setMatchingLen(newMatchingLen);
+    
+    // UPDATE TYPED TEXT
     setTypedText(input);
   };
 
+
+
   const handleReset = () => {
     setTypedText("");
-    setMatchingLen(0);
     setStartIdx(0);
     setGameStarted(false);
     setGameEnded(false);
@@ -98,11 +78,7 @@ export default function Game() {
         <GameText
           phrase={testPhrase}
           typedText={typedText}
-          matchingLen={matchingLen}
           startIdx={startIdx}
-          gameStarted={gameStarted}
-          gameEnded={gameEnded}
-          elapsedTime={elapsedTime}
         />
         <h1>{elapsedTime}</h1>
       </div>
