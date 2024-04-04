@@ -28,7 +28,7 @@ const GameText: React.FC<GameTextProps> = ({
     <div className="text-3xl font-bold text-gray-800 p-4 max-w-lg mx-auto">
       <span className="text-green-500">{completedPhrase}</span>
       <span className="text-green-500">{matchingPhrase}</span>
-      <span className="text-red-500">{misMatchingPhrase}</span>
+      <span className="text-red-500 bg-red-300">{misMatchingPhrase}</span>
       <span className="text-gray-800">{"|"}</span>
       <span className="text-gray-400">{remainingPhrase}</span>
     </div>

@@ -27,7 +27,6 @@ export default function Game() {
       setStartIdx(startIdx + input.length);
       setTypedText("");
       setMatchingLen(0);
-
     } else if (matchingLen + 15 > input.length) {
       setMatchingLen(newMatchingLen);
       setTypedText(input);
@@ -47,8 +46,8 @@ export default function Game() {
           matchingLen={matchingLen}
           startIdx={startIdx}
         />
+        <PlayerInput value={typedText} onChange={handleChange} />
       </div>
-      <PlayerInput value={typedText} onChange={handleChange} />
     </div>
   );
 }
