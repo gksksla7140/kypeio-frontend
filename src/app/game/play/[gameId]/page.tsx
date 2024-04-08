@@ -1,8 +1,10 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import PlayerInput from "@/components/game/PlayerInput";
-import TextBoard from "@/components/game/GameText";
+import TextBoard from "@/components/game/TextBoard";
 import { calculateLongestPrefix } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
 
 type EnemyProgress = Record<string, number>;
 
@@ -10,6 +12,7 @@ const testPhrase = "Hello testing this world hello my ages in 25";
 const misMatchLimit = 15;
 
 export default function Game() {
+  const searchParms = useSearchParams();
   const [typedText, setTypedText] = useState("");
   const [startIdx, setStartIdx] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
@@ -19,6 +22,7 @@ export default function Game() {
     player1: 0,
   });
 
+  console.log(searchParms);
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 

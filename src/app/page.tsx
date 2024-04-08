@@ -10,10 +10,10 @@ const Home: React.FC = () => {
           K-ype IO
         </h2>
         <div className="space-y-6">
-          <LinkButton href="/create">
+          <LinkButton href="/game/create">
             Create Game
           </LinkButton>
-          <LinkButton href="/join">
+          <LinkButton href="/game/join">
             Join Game
           </LinkButton>
         </div>
