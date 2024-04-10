@@ -1,5 +1,6 @@
+"use server";
 import { createSchema, joinSchema } from "@/lib/schemas";
-import { CreateApiResponse, joinApiResponse } from "@/lib/types";
+import { GameApiResponse } from "@/lib/types";
 import {
   ValidationError,
   ServerError,
@@ -13,7 +14,7 @@ const host = "http://127.0.0.1:8000";
 export async function createGame(
   preFormData: any,
   formData: FormData
-): Promise<CreateApiResponse> {
+): Promise<GameApiResponse> {
   try {
     const validatedFields = createSchema.safeParse({
       hostId: formData.get("hostId"),
@@ -22,13 +23,13 @@ export async function createGame(
     if (!validatedFields.success) {
       throw new ValidationError("Invalid Form Data");
     }
-
     const snakeCaseData = changeCase.snakeCase(validatedFields.data);
     const responseData = await fetchData(snakeCaseData, `${host}/create_game`);
-    const data = changeCase.camelCase(responseData);
+    const data = changeCase.camelCase(responseData.data);
 
-    return { data } as CreateApiResponse;
+    return { data } as GameApiResponse;
   } catch (error) {
+    console.log(error);
     return handleError(error);
   }
 }
@@ -36,7 +37,7 @@ export async function createGame(
 export async function joinGame(
   preFormData: any,
   formData: FormData
-): Promise<joinApiResponse> {
+): Promise<GameApiResponse> {
   try {
     const validatedFields = joinSchema.safeParse({
       playerId: formData.get("playerId"),
@@ -50,7 +51,7 @@ export async function joinGame(
     const snakeCaseData = changeCase.snakeCase(validatedFields.data);
     const responseData = await fetchData(snakeCaseData, `${host}/join_game`);
     const data = changeCase.camelCase(responseData);
-    return { data } as joinApiResponse;
+    return { data } as GameApiResponse;
   } catch (error) {
     return handleError(error);
   }
@@ -76,12 +77,14 @@ async function fetchData(data: any, url: string) {
 
 function handleError(error: any) {
   if (error instanceof Error) {
-    switch (error.name) {
-      case "ValidationError":
+    switch (true) {
+      case error instanceof ValidationError:
         return { errors: error.message };
-      case "GameNotFoundError":
-      case "PlayerIdColisionError":
-      case "ServerError":
+      case error instanceof GameNotFoundError:
+        return { errors: error.message };
+      case error instanceof PlayerIdColisionError:
+        return { errors: error.message };
+      case error instanceof ServerError:
         return { errors: error.message };
       default:
         return { errors: "UNKNOWN ERROR" };

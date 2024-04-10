@@ -12,15 +12,19 @@ type FormProps = {
 };
 
 export default function Form({ children, className, formAction }: FormProps) {
-const [state, action] = useFormState(formAction, null);
-const router = useRouter();
+  const [state, action] = useFormState(formAction, null);
+  const router = useRouter();
 
-if (state?.error) {
+  if (state?.error) {
     toast.error(state.error.message);
-} else if (state?.data) {
-    const query = new URLSearchParams(state.data.playerId).toString();
+  } else if (state?.data) {
+    const query = new URLSearchParams([
+      ["playerId", state.data.playerId],
+    ]).toString();
+    console.log(state.data);
+    console.log(query);
     router.push(`/game/play/${state.data.gameId}?${query}`);
-}
+  }
 
   return (
     <form

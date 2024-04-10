@@ -14,10 +14,10 @@ const CreatePage: React.FC = () => {
         </h2>
         <Form formAction={createGame}>
           <div className="mb-6">
-            <Label htmlFor="playerId">Player ID</Label>
+            <Label htmlFor="hostId">Player ID</Label>
             <TextInput
-              id="playerId"
-              name="playerId"
+              id="hostId"
+              name="hostId"
               placeholder="Enter Player ID"
             />
           </div>

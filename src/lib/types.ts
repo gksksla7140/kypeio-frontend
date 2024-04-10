@@ -12,15 +12,7 @@ export interface JoinGameResponse {
 }
 
 
-export interface CreateApiResponse {
-  errors?: string;
-  data?: {
-    gameId: string;
-    hostId: string;
-  };
-}
-
-export interface joinApiResponse {
+export interface GameApiResponse {
   errors?: string;
   data?: {
     gameId: string;
