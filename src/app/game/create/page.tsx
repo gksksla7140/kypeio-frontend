@@ -16,7 +16,6 @@ const CreatePage: React.FC = () => {
     }
 
     if (response.data) {
-      console.log("response.data: ", response.data);
       redirect(
         `/game/play/${response.data.gameId}?playerId=${response.data.hostId}`
       );
