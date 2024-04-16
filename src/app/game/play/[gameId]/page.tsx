@@ -17,57 +17,34 @@ export default function Game() {
   const [startIdx, setStartIdx] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameEnded, setGameEnded] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [enemyProgress, setEnemyProgress] = useState<EnemyProgress>({
     player1: 0,
   });
 
-  console.log(searchParms);
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
+    const playerId = searchParms.get("playerId")
+    console.log("playerId: ", playerId);
+    const gameWebSocket = new WebSocket(
+      "ws://localhost:8000/game/{game_id}/ws"
+    );
 
-    if (gameStarted && !gameEnded) {
-      intervalId = setInterval(() => {
-        setElapsedTime((prevElapsedTime) => prevElapsedTime + 1);
-      }, 1000); // Update every 1 seconds
-    }
+    gameWebSocket.onopen = () => {
+      console.log("WebSocket connection established");
+    };
+
+    gameWebSocket.onmessage = (event) => {
+      const data: EnemyProgress = JSON.parse(event.data);
+      setEnemyProgress(data);
+    };
+
+    gameWebSocket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
 
     return () => {
-      clearInterval(intervalId);
+      gameWebSocket.close();
     };
-  }, [gameStarted, gameEnded]);
-
-  // Mocking enemy progress
-  useEffect(() => {
-    let enemyTimer: NodeJS.Timeout;
-    if (gameStarted && !gameEnded) {
-      enemyTimer = setInterval(() => {
-        setEnemyProgress((prevEnemyProgress) => {
-          const updatedProgress = { ...prevEnemyProgress };
-          let shouldStop = true;
-
-          Object.keys(updatedProgress).forEach((player) => {
-            updatedProgress[player] += 1;
-            if (updatedProgress[player] < testPhrase.length) {
-              shouldStop = false;
-            }
-          });
-          console.log(updatedProgress);
-          if (shouldStop) {
-            console.log("I'm done!");
-            clearInterval(enemyTimer);
-          }
-
-          return updatedProgress;
-        });
-      }, 100);
-    } else {
-      setEnemyProgress({ player1: 0 });
-    }
-    return () => {
-      clearInterval(enemyTimer);
-    };
-  }, [gameStarted, gameEnded]);
+  }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
@@ -116,7 +93,6 @@ export default function Game() {
     setStartIdx(0);
     setGameStarted(false);
     setGameEnded(false);
-    setElapsedTime(0);
   };
 
   return (
@@ -131,13 +107,9 @@ export default function Game() {
         {!gameEnded && (
           <PlayerInput value={typedText} onChange={handleChange} />
         )}
-        <h1 className="text-black text-center">{elapsedTime}</h1>
       </div>
       {gameEnded && (
         <div className="text-black">
-          <p className="text-center">
-            Game ended! Time elapsed: {elapsedTime} seconds
-          </p>
           <button onClick={handleReset}>Restart</button>
         </div>
       )}

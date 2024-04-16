@@ -1,3 +1,4 @@
+import { ValidationError } from "@/errors/errors";
 export const calculateLongestPrefix = (
   input: string,
   phrase: string
